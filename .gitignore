@@ -1,0 +1,6 @@
+inc/
+warmup*/
+*.exe
+*.out
+input.txt
+input_test.txt
