@@ -14,58 +14,50 @@ int main() {
 
     //------------------------------PARSE INPUT------------------------------//
 
-    // stack vars
+    // stack var
     vector<stack<char>> boxes;
-    vector<stack<char>> boxes_rev;
-    
-    // label vars
-    size_t lbl_idx = 0;
+
+    // label var
+    int lbl_idx = 0; int vidx = 0;
     
     // get number of stacks
-    size_t vidx = 0;
     while(true){
 
-        if (std::find(vs[vidx].begin(), vs[vidx].end(), '[') == vs[vidx].end()) {
-            
+        if (std::find(vs[vidx].begin(), vs[vidx].end(), '[') == vs[vidx].end()) { 
+
             auto szit = std::find_if(vs[vidx].rbegin(), vs[vidx].rend(), [](const auto& x){ return isdigit(x); });
             int sz = stoi(String(1, *szit));
-            
+
             boxes.resize(sz);
-            boxes_rev.resize(sz);
             lbl_idx = vidx;
             break;
-            
         }
         ++vidx;
     }
+    vidx -= 1;
 
     // get stacks //
-    vidx = 0;
-    while (vidx < lbl_idx){
+    while (vidx >= 0){
+
         size_t bidx = 1;
-        for (size_t i = 0; i < boxes_rev.size(); ++i){
+
+        for (size_t i = 0; i < boxes.size(); ++i){
             char b = vs[vidx][bidx];
-            if (!isspace(b)){
-                boxes_rev[i].push(b);
-            }
+            if (!isspace(b)){ boxes[i].push(b); }
             bidx += 4;
         }
-        ++vidx;
+        --vidx;
     }
 
-   // reverse stacks //
-    for (size_t i = 0; i < boxes.size(); ++i){
-        while(!(boxes_rev[i].empty())){
-            boxes[i].push(boxes_rev[i].top()); boxes_rev[i].pop();
-        }
-    }
+    // seek label
+    vidx = lbl_idx;
 
     //---------------------------------MOVES---------------------------------//
 
     int moves[3];
     stack<char>* orig; 
     stack<char>* dest;
-    std::deque<char>* buf = new std::deque<char>();
+    deque<char>* buf = new deque<char>();
 
     // regex vars
     std::smatch m;
@@ -75,7 +67,7 @@ int main() {
 
         if (std::regex_search(vs[vidx], m, rgx)) {
 
-            // get moves, assume that moves size == 3
+            // get moves and ignore first match which is entire string
             for(auto it = m.begin() + 1; it < m.end(); ++it){ 
                 int i = it - m.begin();
                 moves[i - 1] = stoi((*it).str()); 
